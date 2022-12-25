@@ -36,13 +36,17 @@ library(ical)
 
 # Introduction
 
-Federal Higher Education accreditation guidelines require at least 12 hours per week for each course, including class and lab times. I have always wondered if this is the case for the courses I take. I think that at times I spend more time on some courses than others, depending on how much I enjoy them, how difficult I find them or how much work I am assigned for the course. I decided to track my time allocation for my courses over a period of two weeks to see what patterns showed up in the way I study. My initial question was: What course do I spend most of my time on and does it meet the recommended time? I also became interested in finding out if my workflow changed depending on whether it was a weekday or a weekend, and if certain days were more busy for me than others. This information would help me to distribute my efforts more evenly and possibly restructure my schedule to put more effort to other courses. I was also interested in looking back at the results to see if they were indicative of the grades I would get at the end of the semester.
+Federal Higher Education accreditation guidelines require at least 12 hours per week for each course, including class and lab times. I have always wondered if this is the case for the courses I take. I think that at times I spend more time on some courses than others, depending on how much I enjoy them, how difficult I find them or how much work I am assigned for the course. I decided to track my time allocation for my courses over a period of two weeks to see what patterns showed up in the way I study. My initial question was: 
+
+- What course do I spend most of my time on and does it meet the recommended time? 
+
+I also became interested in finding out if my workflow changed depending on whether it was a weekday or a weekend, and if certain days were more busy for me than others. This information would help me to distribute my efforts more evenly and possibly restructure my schedule to put more effort to other courses. I was also interested in looking back at the results to see if they were indicative of the grades I would get at the end of the semester.
 
 # Methods
 
 ## Data collection
 
-I use my iCloud calender to keep track of my schedule and weekly commitments, since it is synced across my phone, Mac and iPad. The calender contains other commitments not related to this particular study so I used Toggl to keep track of my time commitments for each course I was taking. Every time my calender indicated that I was beginning work for a course, I would create an event on Toggl named after the course I was working on. In this way, I had a calender dedicated solely for my courses that I exported as a csv at the end of the two week period. Having two calenders also helped me to verify my entries for this project. If I forgot to add an event to my Toggl tracker, I could always refer to my iCloud calender to see how I had spent my day with regards to my courses.
+I use my *iCloud* calender to keep track of my schedule and weekly commitments, since it is synced across my phone, Mac and iPad. The calender contains other commitments not related to this particular study so I used *Toggl* to keep track of my time commitments for each course I was taking. Every time my calender indicated that I was beginning work for a course, I would create an event on *Toggl* named after the course I was working on. In this way, I had a calender dedicated solely for my courses that I exported as a csv at the end of the two week period. Having two calenders also helped me to verify my entries for this project. If I forgot to add an event to my *Toggl* tracker, I could always refer to my *iCloud* calender to see how I had spent my day with regards to my courses.
 
 ## Data wrangling
 
@@ -226,7 +230,7 @@ theme(axis.text.x = element_text(size = 10,
 g
 ```
 
- From this plot, I can see that Algorithms and Data Science had spikes during the first week which coincides with the time when I began working on projects in both classes. My time allocation for English and Machine Learning increased during the second week compared to the first one, which can be explained by the increase in course material as the semester progressed. From the side by side plots, it is also evident that in general, my week tends to get busier as I approach Wednesday and Sunday but my time commitment drops in-between the two days.
+From this plot, I can see that Algorithms and Data Science had spikes during the first week which coincides with the time when I began working on projects in both classes. My time allocation for English and Machine Learning increased during the second week compared to the first one, which can be explained by the increase in course material as the semester progressed. From the side by side plots, it is also evident that in general, my week tends to get busier as I approach Wednesday and Sunday but my time commitment drops in-between the two days.
 
 I was also interested in seeing the differences in my time commitments to my courses between weekdays and weekends. Figure 3 helps me to answer this question as it separates my time distribution over the two weeks by weekday type. From the plot, it is clear that I tend to have busier Sundays than Saturdays, which is evidence of my preparation for the week ahead. An exception to this is Algorithms,for which I tend to do more work for on Saturdays than Sundays.
 
@@ -311,7 +315,7 @@ Moving forward, I hope to be more consistent with my time allocation per course 
 
 I would need to collect data for a month in order to satisfactorily answer my questions because this is enough time to downplay the effects of fluctuations in course time due to projects or midterms which may distort the accuracy of how I spent my time.
 
-The main difficulties in data collection were consistency. I don't usually actively track the time I spend on courses so I had to remind myself a few times to record when I was working on my studies. Having two calenders helped a little with keeping track of my time since I could fill in missing gaps in my Toggl track calender by referencing my iCloud Calender.
+The main difficulties in data collection were consistency. I don't usually actively track the time I spend on courses so I had to remind myself a few times to record when I was working on my studies. Having two calenders helped a little with keeping track of my time since I could fill in missing gaps in my *Toggl* track calender by referencing my *iCloud* Calender.
 
 One lesson that I learnt from this project is that wrangling takes just as much time as data collection. One thing that really helped me to be more efficient with my analysis was that I started wrangling as soon as I had collected a small amount of data. This helped me set up my wrangling procedure which I just had to scale up as needed once I had collected all my data. This is a really efficient method that I hope to use for future projects.
 
