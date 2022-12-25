@@ -1,0 +1,435 @@
+---
+title: "Tracking how much time I spent on my college courses"
+subtitle: "SAT 231: Calendar Query"
+author: "Michael Mhuru"
+date: "\\today"
+output: pdf_document
+linestretch: 1.15
+fontfamily: cmbright
+---
+
+```{r setup, include = FALSE}
+# set code chunk option defaults
+knitr::opts_chunk$set(
+  # display code as types
+  tidy = FALSE, 
+  # slightly smaller code font
+  size = "small",
+  # do not display messages in PDF
+  message = FALSE,
+  # set default figure width and height
+  fig.width = 6, fig.height = 4) 
+
+# improve digit and NA display 
+options(scipen = 1, knitr.kable.NA = '')
+
+# load packages
+library(kableExtra)
+library(tidyverse)
+library(lubridate)
+library(glue)
+library(janitor)
+library(ical)
+```
+
+
+# Introduction 
+Federal Higher Education accreditation guidelines require at least 12 hours per 
+week for each course, including class and lab times. I have always wondered if 
+this is the case for the courses I take. I think that at times I spend more time 
+on some courses than others, 
+depending on how much I enjoy them, how difficult I find them or how much work I
+am assigned for the course. I decided to track my time allocation for my courses 
+over a period of two weeks to see what patterns showed up in the way I study. 
+My initial question was: What course do I spend most of my time on and does it meet the recommended time? I also became interested in finding out if my workflow changed depending on whether it was a 
+weekday or a weekend, and if certain days were more busy for me than others. 
+This information would help me to distribute my efforts more evenly and possibly 
+restructure my schedule to put more effort to other courses. I was also interested 
+in looking back at the results to see if they were indicative of the grades 
+I would get at the end of the semester. 
+
+# Methods 
+
+## Data collection 
+I use my iCloud calender to keep track of my schedule and weekly commitments, 
+since it is synced across my phone, Mac and iPad. The calender contains other 
+commitments not related to this particular study so I used Toggl to keep track 
+of my time commitments for each course I was taking. Every time my calender 
+indicated that I was beginning work for a course, I would create an event on
+Toggl named after the course I was working on. In this way, I had a calender 
+dedicated solely for my courses that I exported as a csv at the end of the two 
+week period. Having two calenders also helped me to verify my entries for this 
+project. If I forgot to add an event to my Toggl tracker, I could always refer 
+to my iCloud calender to see how I had spent my day with regards to my courses. 
+
+
+
+## Data wrangling 
+I used the **tidyverse** suite of packages, **lubridate**, and **glue** to 
+wrangle and prepare the data. I separated the data by weeks so that I could see
+the trends separately per week. I also separated the days into weekdays and 
+weekends so that I could see how the time distribution varied over the two day 
+types. Sometimes I would work on the same course twice a day separately, so I had 
+to sum for each course per day. I also summed the hours spent per course 
+over the 14 days as well as per week. I did the same with the average time as 
+well as the standard deviation.
+
+
+```{r toggl finale}
+# Data import: toggl
+toggl_main <- read_csv("data/michael-data.csv")
+
+# Data wrangling
+coursetime<- toggl_main %>% 
+  rename(course = Description)%>%
+  clean_names() %>% 
+  mutate(
+    # Create date-times from separate dates and times for calculating duration
+    start = ymd_hms(glue("{start_date} {start_time}"), 
+                    tz = "America/New_York"),
+    end = ymd_hms(glue("{end_date} {end_time}"), 
+                  tz = "America/New_York"),
+    
+       duration_hours = interval(start, end) / hours(1),
+
+    across(c(course, tags), 
+           .fns = str_squish))
+
+#get weekdays from the `start_date`
+coursetime$weekday <- weekdays(coursetime$start_date) 
+
+#create a new data frame that is cleaner to separate weeks and weekday and weekends
+coursetime2 <- coursetime %>% 
+  group_by(start_date, course) %>% 
+  #add all hours for the same course per day
+  summarise(duration_hours = sum(duration_hours)) %>% 
+  #make each course a variable
+  pivot_wider(names_from = "course",
+              values_from = "duration_hours") 
+```
+
+```{r}
+#Compute total and average duration for each course over the 14 days
+course_summary <- coursetime %>% 
+  group_by(course) %>% 
+  summarise( course_total = sum(duration_hours),
+             course_average = round(course_total/14, digits = 2),
+             course_sd = round(sd(duration_hours), digits = 2)) %>% 
+  #combine `course_average` and `course_sd` into one column 
+  mutate(course_average = glue('{course_average} ({course_sd})')) %>% 
+  arrange(desc(course_total)) 
+  
+  
+#remove the column for `course_sd`
+course_summary <- subset(course_summary, select = -c(course_sd))
+```
+
+```{r}
+#Create variables to show weeks (week 1 and week 2) as well as day type 
+#(weekday vs weekend)
+course_weekly <- coursetime2 %>% 
+  select(start_date, English,
+         `Data Science`, 
+         `Machine Learning`, 
+         Algorithms) %>% 
+  #change courses from separate columns into one
+  pivot_longer(cols = -start_date,
+               names_to = "course",
+               values_to = "duration-hours") %>% 
+  #make each date a column
+  pivot_wider(names_from = "start_date",
+              values_from = "duration-hours") %>%
+  #rename date columns into week1 and week2 variables
+  rename("Week1.Saturday" = "2022-09-10",
+         "Week1.Sunday" = "2022-09-11",
+         "Week1.Monday" = "2022-09-12",
+         "Week1.Tuesday" = "2022-09-13",
+         "Week1.Wednesday" = "2022-09-14",
+         "Week1.Thursday" = "2022-09-15",
+         "Week1.Friday" = "2022-09-16",
+         "Week2.Saturday" = "2022-09-17",
+         "Week2.Sunday" = "2022-09-18",
+         "Week2.Monday" = "2022-09-19",
+         "Week2.Tuesday" = "2022-09-20",
+         "Week2.Wednesday" = "2022-09-21",
+         "Week2.Thursday" = "2022-09-22",
+         "Week2.Friday" = "2022-09-23") %>% 
+  #assign renamed dates to `weekday` variable in one column
+  pivot_longer(cols = -course,
+               names_to = "weekday",
+               values_to = "duration_hours") %>% 
+  #create new variables -- `week` and `weekday` separated by '.' 
+  separate(col = weekday, into = c("week", "weekday"), sep="\\.") %>% 
+  #make `weekday` a categorical variable and assign values
+  mutate(weekday = factor(weekday, levels = c("Monday",
+                                              "Tuesday",
+                                              "Wednesday",
+                                              "Thursday",
+                                              "Friday",
+                                              "Saturday",
+                                              "Sunday")),
+         #separate weekdays and weekend days
+         weekday_type = fct_collapse(weekday,
+                                weekday = c("Monday",
+                                              "Tuesday",
+                                              "Wednesday",
+                                              "Thursday",
+                                              "Friday"),
+                                weekend = c( "Saturday",
+                                              "Sunday")))
+         
+
+```
+
+```{r}
+# Compute the total and average time per course for each week
+weekly_summary <- course_weekly %>% 
+pivot_wider(names_from = "week",
+            values_from = "duration_hours") %>% 
+  group_by(course) %>% 
+  summarise(week1_total = sum(Week1),
+            week1_avg = round(week1_total/7, digits = 2),
+            week1_sd = round(sd(Week1), digits = 2),
+            week2_total = sum(Week2),
+            week2_avg = round(week2_total/7, digits = 2),
+            week2_sd = round(sd(Week2), digits = 2)) %>% 
+  #put the mean and standard deviation on one column
+  mutate(week1_avg = glue('{week1_avg} ({week1_sd})'),
+         week2_avg = glue('{week2_avg} ({week2_sd})'))%>% 
+  arrange(desc(week1_total)) 
+  
+#remove the columns for `week1_sd` and `week2_sd`
+weekly_summary <- subset(weekly_summary, select = -c(week1_sd,
+                                                     week2_sd))
+
+```
+
+```{r}
+#Compute the total time per day for each course over the 14 days
+fortnight_distribution <- coursetime %>% 
+  group_by(start_date, 
+          course) %>% 
+  #sum course hours per day
+ summarise(course_time = sum(duration_hours))
+   
+```
+
+
+## Statistical methods
+After wrangling the data, I used a time series plot to display how much time I
+allocated to a course over the two weeks. I used colors to distinguish courses.
+I used a second time series plot to display the differences between the two weeks.
+I further used a third time series plot to display the differences in time spent 
+per course for weekdays and weekends. 
+
+I computed descriptive statistics (total, mean and standard deviation) to 
+determine two things. The first set was to determine which courses I spent the 
+most and least time on over the two week period. The second set was to determine 
+how the time allocation changed for each course over the two week period and
+whether it met the minimum recommended time.
+
+The **ggplot**  and **scales** packages were used to create each visualization 
+and **kableExtra** was used to customize each table.
+
+
+
+
+# Results 
+Firstly, I wanted to see how my time allocation per course varied over the 14 
+days over which I collected this data.Figure 1 shows the time distribution from 
+September 10 to September 23 for each course. From the plot, we can see that on 
+average, I spend more time on Data Science than any other course. I also tend to 
+spend little time on Machine learning save for the huge spike on September 18, 
+which corresponds to the time when I was setting up for a project in the class. 
+I do not spend as much time on Algorithms, especially in the second week. 
+
+```{r}
+g <- ggplot(fortnight_distribution, 
+            mapping = aes(x = start_date, 
+                          y = course_time,
+                          color = course)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Time distribution for courses", 
+       subtitle = "for September 9 to September 24", 
+       caption = "Figure 1: Time spent on a course across fourteen days",
+       x = "Day", 
+       y = "Hours") +
+  #set the scale for the axis and display the dates as month and date
+  scale_x_date(breaks = "1 day",
+               date_labels = "%b%d") +
+    theme_light() +
+  #set the position and specifics of the caption and x axis titles
+theme(axis.text.x = element_text(size = 10,
+                                 angle = 45,
+                                 color = "black",
+                                 vjust = 1,
+                                 hjust = 1),
+      plot.caption = element_text(hjust = 0.5)) 
+
+g
+```
+
+Secondly, I wanted to see how my time commitment varied between the two weeks. 
+Even though some patterns can be seen from Figure 1, I decided that it would be 
+helpful to separate the plot by weeks to see how time allocation changed per 
+week. Figure 2 shows time distribution for week 1 and week 2 separately. From 
+this plot, I can see that Algorithms and Data Science had spikes during the 
+first week which coincides with the time when I began working on projects in 
+both classes. My time allocation for English and Machine Learning increased 
+during the second week compared to the first one, which can be explained by the 
+increase in course material as the semester progressed. From the side by side 
+plots, it is also evident that in general, my week tends to get busier as I 
+approach Wednesday and Sunday but my time commitment drops inbetween the two 
+days. 
+
+
+```{r}
+g <- ggplot(course_weekly, mapping = aes(x = weekday,
+                                       y = duration_hours, 
+                                       color = course,
+                                       group = course)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Weekly time distribution for Fall courses",
+       subtitle = "Week 1 vs. Week 2",
+       caption = "Figure 2: Time spent on courses by week",
+       x = "Week day",
+       y = "Hours") +
+  theme_light() +
+    #set the position and specifics of the caption and x axis titles
+  theme(axis.text.x = element_text(size = 10,
+                                 angle = 45,
+                                 color = "black",
+                                 vjust = 1,
+                                 hjust = 1),
+        plot.caption = element_text(hjust = 0.5)) +
+  #separate the plots by week
+  facet_wrap(~week)
+
+g
+```
+
+I was also interested in seeing the differences in my time commitments to my 
+courses between weekdays and weekends. Figure 3 helps me to answer this question
+as it separates my time distribution over the two weeks by weekday type. 
+From the plot, it is clear that I tend to have busier Sundays than Saturdays, 
+which is evidence of my preparation for the week ahead. An exception to this is 
+Algorithms,for which I tend to do more work for on Saturdays than Sundays.
+
+```{r, fig.height = 6, fig.width = 7}
+g <- ggplot(course_weekly, mapping = aes(x = weekday,
+                                       y = duration_hours, 
+                                       color = course,
+                                       group = course)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Time distribution for Fall courses by week",
+       subtitle = "Weekdays vs. Weekends",
+       caption = "Figure 3: Comparison of weekdays and weekends ",
+       x = "Week day",
+       y = "Hours") +
+  theme_light() +
+    #set the position and specifics of the caption and x axis titles
+  theme(axis.text.x = element_text(size = 10,
+                                 angle = 45,
+                                 color = "black",
+                                 vjust = 1,
+                                 hjust = 1),
+        plot.caption = element_text(hjust = 0.5)) +
+  #seperate the plots by week and weekday type
+  facet_wrap(week~weekday_type, scales = 'free')
+
+g
+```
+
+The plots are helpful for seeing trends in my data, however they do not give me 
+values that would help me determine which courses I spend the most and least time 
+on.Table 1 helps me to determine this. The table shows that I tend to spend more
+time on Data Science followed by English, Machine Learning and lastly Algorithms.
+This table slightly aligns with my course interests as well as the workload I 
+have for each course. 
+
+
+```{r}
+course_summary %>% 
+  kable(col.names = c("Course", 
+                      "Total",
+                      "Average(SD)"),
+        booktabs = TRUE,
+        digits = 2,
+        align = "lcc",
+        caption = "Course Summary over the 14 days") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
+  add_header_above(header = c(" " = 1,
+                              "Time spent in hours" = 2),
+                   bold = TRUE) %>% 
+  row_spec(row = c(0), bold = TRUE)
+  
+```
+
+Table 2 further helps me to determine whether I am spending the recommended time
+per course per week. From the table, we can see that for the first and second
+week, I spent the recommended time for Data Science. I almost spent the 
+recommended time on Algorithms for the first week but this dropped down for the 
+second week. In contrast, I did not meet the minimum required time for English 
+and Machine Learning during the first week but improved on the second week.
+
+```{r}
+ weekly_summary %>% 
+  kable(col.names = c("Course",
+                      "Total",
+                      "Mean(SD)",
+                       "Total",
+                       "Mean(SD)"
+                      ),
+        booktabs = TRUE,
+        digits = 2, 
+        align = "lcc",
+        caption = "Course Summary by Week") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
+  add_header_above(header = c(" " = 1,
+                   "Week 1" = 2, "Week 2" = 2),
+                   bold = TRUE) %>% 
+  add_header_above(header = c(" " = 1,
+                              "Time spent in hours" = 4),
+                   bold = TRUE) %>% 
+  row_spec(row = c(0), bold = TRUE)
+```
+
+
+# Conclusions 
+It was interesting to learn that my time commitment to my studies has improved
+over the two weeks of the study. I have always thought that I start my semester 
+on a high note and falter as the semester progresses which does not appear to be the case here. It was also interesting to learn that I am putting more work towards Data Science and English as opposed to Machine Learning and Algorithms. This is quite surprising considering that I am the only student in the Special Topics English class I am taking and meet only once a week with the professor. 
+
+I did not know that my time commitments peaked around Wednesday and Sunday. This could really inform how I set up my week and redistribute my effort so that I do not overwhelm 
+myself on the two days. I was slightly concerned that I am using the recommended time for Data Science only. I am also concerned because I am wondering if this project helped me to put more time to the course, and whether that will remain the case once I finish it. 
+
+Moving forward, I hope to be more consistent with my time allocation per course 
+and to use the recommended time for each course. I am considering setting aside 
+more time for my courses, particularly Algorithms.
+
+
+
+
+\newpage
+# Reflection 
+I would need to collect data for a month in order to satisfactorily answer my 
+questions because this is enough time to downplay the effects of fluctuations 
+in course time due to projects or midterms which may distort the accuracy of how
+I spent my time.
+
+The main difficulties in data collection were consistency. I don't usually 
+actively track the time I spend on courses so I had to remind myself a few times 
+to record when I was working on my studies. Having two calenders helped a little 
+with keeping track of my time since I could fill in missing gaps in my Toggl 
+track calender by referencing my iCloud Calender.
+
+One lesson that I learnt from this project is that wrangling takes just as much 
+time as data collection. One thing that really helped me to be more efficient 
+with my analysis was that I started wrangling as soon as I had collected a small
+amount of data. This helped me set up my wrangling procedure which I just had to 
+scale up as needed once I had collected all my data. This is a really efficient 
+method that I hope to use for future projects.
+
