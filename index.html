@@ -9,7 +9,7 @@
     
         <meta name="date" content="2022-09-30" />
     
-    <title>Calender Query - Ananalysis of how I spent my study time</title>
+    <title>Calender Query - An analysis of how I spent my study time</title>
 
         <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1732,7 +1732,7 @@ margin-left: 0 !important;
    <div class="book with-summary">
       <div class="book-summary">
         <ul>
-          <li class="title">Calender Query - Ananalysis of how I spent
+          <li class="title">Calender Query - An analysis of how I spent
 my study time</li>
           <li class="divider"></li>
         </ul>
@@ -1773,7 +1773,7 @@ Michael Mhuru</span></li>
       
    
         
-      <h1 class="title">Calender Query - Ananalysis of how I spent my
+      <h1 class="title">Calender Query - An analysis of how I spent my
 study time</h1>
       
         
@@ -1791,39 +1791,42 @@ at times I spend more time on some courses than others, depending on how
 much I enjoy them, how difficult I find them or how much work I am
 assigned for the course. I decided to track my time allocation for my
 courses over a period of two weeks to see what patterns showed up in the
-way I study. My initial question was: What course do I spend most of my
-time on and does it meet the recommended time? I also became interested
-in finding out if my workflow changed depending on whether it was a
-weekday or a weekend, and if certain days were more busy for me than
-others. This information would help me to distribute my efforts more
-evenly and possibly restructure my schedule to put more effort to other
-courses. I was also interested in looking back at the results to see if
-they were indicative of the grades I would get at the end of the
-semester.</p>
+way I study. My initial question was:</p>
+<ul>
+<li>What course do I spend most of my time on and does it meet the
+recommended time?</li>
+</ul>
+<p>I also became interested in finding out if my workflow changed
+depending on whether it was a weekday or a weekend, and if certain days
+were more busy for me than others. This information would help me to
+distribute my efforts more evenly and possibly restructure my schedule
+to put more effort to other courses. I was also interested in looking
+back at the results to see if they were indicative of the grades I would
+get at the end of the semester.</p>
 </div>
 <div id="methods" class="section level1">
 <h1>Methods</h1>
 <div id="data-collection" class="section level2">
 <h2>Data collection</h2>
-<p>I use my iCloud calender to keep track of my schedule and weekly
-commitments, since it is synced across my phone, Mac and iPad. The
-calender contains other commitments not related to this particular study
-so I used Toggl to keep track of my time commitments for each course I
-was taking. Every time my calender indicated that I was beginning work
-for a course, I would create an event on Toggl named after the course I
-was working on. In this way, I had a calender dedicated solely for my
-courses that I exported as a csv at the end of the two week period.
-Having two calenders also helped me to verify my entries for this
-project. If I forgot to add an event to my Toggl tracker, I could always
-refer to my iCloud calender to see how I had spent my day with regards
-to my courses.</p>
+<p>I use my <em>iCloud</em> calender to keep track of my schedule and
+weekly commitments, since it is synced across my phone, Mac and iPad.
+The calender contains other commitments not related to this particular
+study so I used <em>Toggl</em> to keep track of my time commitments for
+each course I was taking. Every time my calender indicated that I was
+beginning work for a course, I would create an event on <em>Toggl</em>
+named after the course I was working on. In this way, I had a calender
+dedicated solely for my courses that I exported as a csv at the end of
+the two week period. Having two calenders also helped me to verify my
+entries for this project. If I forgot to add an event to my
+<em>Toggl</em> tracker, I could always refer to my <em>iCloud</em>
+calender to see how I had spent my day with regards to my courses.</p>
 </div>
 <div id="data-wrangling" class="section level2">
 <h2>Data wrangling</h2>
-<p>I used the <strong>tidyverse</strong> suite of packages,
-<strong>lubridate</strong>, and <strong>glue</strong> to wrangle and
-prepare the data. I separated the data by weeks so that I could see the
-trends separately per week. I also separated the days into weekdays and
+<p>I used the <code>tidyverse</code> suite of packages,
+<code>lubridate</code>, and <code>glue</code> to wrangle and prepare the
+data. I separated the data by weeks so that I could see the trends
+separately per week. I also separated the days into weekdays and
 weekends so that I could see how the time distribution varied over the
 two day types. Sometimes I would work on the same course twice a day
 separately, so I had to sum for each course per day. I also summed the
@@ -2313,8 +2316,8 @@ distort the accuracy of how I spent my time.</p>
 usually actively track the time I spend on courses so I had to remind
 myself a few times to record when I was working on my studies. Having
 two calenders helped a little with keeping track of my time since I
-could fill in missing gaps in my Toggl track calender by referencing my
-iCloud Calender.</p>
+could fill in missing gaps in my <em>Toggl</em> track calender by
+referencing my <em>iCloud</em> Calender.</p>
 <p>One lesson that I learnt from this project is that wrangling takes
 just as much time as data collection. One thing that really helped me to
 be more efficient with my analysis was that I started wrangling as soon

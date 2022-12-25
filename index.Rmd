@@ -1,5 +1,5 @@
 ---
-title: "Calender Query - An analysis of how I spent my study time"
+title: "Calender Query - An analysis of how I spend my study time"
 author: "Takudzwanashe Michael Mhuru"
 date: "09/30/2022"
 output:

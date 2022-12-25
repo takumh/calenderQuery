@@ -3,7 +3,7 @@
     "path": "~/Documents/GitHub/calenderQuery/index.Rmd",
     "project_path": "index.Rmd",
     "type": "r_markdown",
-    "hash": "2708231388",
+    "hash": "2410757963",
     "contents": "",
     "dirty": false,
     "created": 1671983810876.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "317,357",
-        "scrollLine": "310"
+        "cursorPosition": "8,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1671985847,
+    "lastKnownWriteTime": 1671999452,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1671985847712,
+    "last_content_update": 1671999452187,
     "read_only": false,
     "read_only_alternatives": []
 }
